@@ -15,7 +15,7 @@ api.interceptors.request.use((config) => {
       const { token } = JSON.parse(auth);
       if (token) {
         config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${token}`;
+        config.headers.Authorization = 'Bearer ' + token;
       }
     } catch (error) {
       console.warn('Failed to parse auth token from localStorage', error);

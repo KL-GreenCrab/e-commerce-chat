@@ -394,7 +394,6 @@ function extractCategory(message) {
         'máy tính bảng': 'Tablets',
         'tablet': 'Tablets',
         'ipad': 'Tablets',
-        'máy tính bảng': 'Tablets',
         'tab': 'Tablets',
         'surface': 'Tablets',
         'galaxy tab': 'Tablets',
@@ -949,6 +948,7 @@ function createProductConsultationResponse(intent, product) {
             .map(([key, value]) => `• **${key}:** ${value}\n`)
             .join('');
 
+        consultationText += otherSpecs;
         consultationText += '\n';
     }
 

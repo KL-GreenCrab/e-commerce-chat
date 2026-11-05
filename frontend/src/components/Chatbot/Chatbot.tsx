@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
-import axios from 'axios';
+import api from '../../services/api';
 
 interface Product {
     id: string;
@@ -73,7 +73,7 @@ export const Chatbot: React.FC = () => {
 
             // Gửi tin nhắn đến server sử dụng axios
             // Sử dụng URL tương đối để tận dụng proxy trong vite.config.ts
-            const response = await axios.post('/api/chatbot/message',
+            const response = await api.post('/chatbot/message',
                 { message: messageText },
                 {
                     headers: {
@@ -106,7 +106,7 @@ export const Chatbot: React.FC = () => {
 
             let errorMessage = 'Không xác định';
 
-            if (axios.isAxiosError(error)) {
+            if (api.isAxiosError(error)) {
                 // Xử lý lỗi Axios
                 if (error.response) {
                     // Server trả về lỗi với status code

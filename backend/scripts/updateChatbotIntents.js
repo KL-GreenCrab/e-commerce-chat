@@ -33,12 +33,8 @@ async function updateChatbotIntents() {
             'Tôi muốn tìm sản phẩm từ 500 đến 1000 USD'
         ];
 
-        // Import the service function for testing
-        const { extractPriceRange } = require('../services/chatbotService');
-
         testMessages.forEach(msg => {
             console.log(`Message: "${msg}"`);
-            // This would need the function to be exported, for now just log
             console.log('Would extract price range...');
         });
 

@@ -31,7 +31,7 @@ Single-page storefront for an electronics shop, with a floating shopping assista
 
 ## Tech stack
 
-React 18 · TypeScript · Vite 5 · Tailwind CSS · React Router 6 · Axios · Recharts · Lucide icons · react-hot-toast / react-toastify · jwt-decode
+React 18 · TypeScript · Vite 5 · Tailwind CSS · React Router 6 · Axios · Recharts · Lucide icons · react-hot-toast · jwt-decode
 
 ## Getting started
 

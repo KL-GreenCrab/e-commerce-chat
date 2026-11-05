@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import { useAuth } from '../hooks/useAuth';
 import { getOrderById, updateOrder } from '../services/adminService';
 import { Order, OrderItem } from '../types';

@@ -7,6 +7,10 @@ if (!jwtSecret) {
     throw new Error('JWT_SECRET environment variable is required. Set it before starting the backend.');
 }
 
+if (env === 'production' && !process.env.ADMIN_PASSWORD) {
+    throw new Error('ADMIN_PASSWORD environment variable is required in production.');
+}
+
 const config = {
     development: {
         PORT: process.env.PORT || 5000,
@@ -24,7 +28,7 @@ const config = {
         CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
         jwtSecret,
         ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'admin@example.com',
-        ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || 'Admin@12345'
+        ADMIN_PASSWORD: process.env.ADMIN_PASSWORD
     },
     test: {
         PORT: process.env.PORT || 5000,

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { getDashboardStats } from '../../services/adminService';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 // Comentamos temporalmente la importación de recharts para evitar errores
 // import {

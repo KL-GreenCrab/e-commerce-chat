@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -327,7 +325,6 @@ function App() {
 
             <Chatbot />
 
-            <ToastContainer />
           </div>
         </Router>
       </CartProvider>

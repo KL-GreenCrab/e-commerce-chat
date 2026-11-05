@@ -1,5 +1,5 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "ecommerce-chatbot-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -18,7 +18,6 @@
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.22.3",
-    "react-toastify": "^11.0.5",
     "recharts": "^2.15.3"
   },
   "devDependencies": {

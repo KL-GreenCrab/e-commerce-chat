@@ -4,7 +4,7 @@ const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const mongoose = require('mongoose');
-const { auth } = require('../middleware/auth');
+const { auth, admin } = require('../middleware/auth');
 
 // Tạo đơn hàng mới
 router.post('/', auth, async (req, res) => {
@@ -239,6 +239,32 @@ router.get('/:id', auth, async (req, res) => {
             message: 'Lỗi khi lấy thông tin đơn hàng',
             error: error.message
         });
+    }
+});
+
+
+// C?p nh?t tr?ng th?i ??n h?ng (admin)
+router.put('/:id/status', auth, admin, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const validStatuses = ['pending', 'processing', 'completed', 'cancelled'];
+
+        if (!status || !validStatuses.includes(status)) {
+            return res.status(400).json({ message: 'Tr?ng th?i ??n h?ng kh?ng h?p l?' });
+        }
+
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return res.status(404).json({ message: 'Kh?ng t?m th?y ??n h?ng' });
+        }
+
+        order.status = status;
+        await order.save();
+
+        res.json(order);
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({ message: 'L?i khi c?p nh?t tr?ng th?i ??n h?ng', error: error.message });
     }
 });
 

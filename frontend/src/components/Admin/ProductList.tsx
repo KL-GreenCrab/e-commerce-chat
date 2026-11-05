@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProducts, deleteProduct } from '../../services/adminService';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import { Product } from '../../types';
 import { Trash2, Edit, Plus, Search } from 'lucide-react';
 
