@@ -20,9 +20,13 @@ jest.mock('../models/Order', () => MockOrder);
 jest.mock('../models/Cart', () => ({
   deleteOne: jest.fn().mockResolvedValue(true)
 }));
+jest.mock('../models/Product', () => ({
+  find: jest.fn()
+}));
 
 const orderRoutes = require('../routes/orderRoutes');
 const Cart = require('../models/Cart');
+const Product = require('../models/Product');
 
 const app = express();
 app.use(express.json());
@@ -31,9 +35,18 @@ app.use('/api/orders', orderRoutes);
 describe('Order routes', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    Product.find.mockResolvedValue([
+      {
+        _id: '507f1f77bcf86cd799439011',
+        name: 'Test product',
+        image: 'https://example.com/image.png',
+        price: 100,
+        stock: 10
+      }
+    ]);
   });
 
-  it('creates an order when totals match the cart and auth is valid', async () => {
+  it('creates an order when auth is valid', async () => {
     const token = jwt.sign({ userId: '507f1f77bcf86cd799439011', role: 'user' }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     const payload = {
@@ -68,7 +81,7 @@ describe('Order routes', () => {
     expect(Cart.deleteOne).toHaveBeenCalled();
   });
 
-  it('refuses an order when the provided total does not match the actual cart total', async () => {
+  it('uses the database price when a lower client price is sent', async () => {
     const token = jwt.sign({ userId: '507f1f77bcf86cd799439011', role: 'user' }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     const response = await request(app)
@@ -80,11 +93,11 @@ describe('Order routes', () => {
             productId: '507f1f77bcf86cd799439011',
             name: 'Test product',
             image: 'https://example.com/image.png',
-            price: 100,
+            price: 50,
             quantity: 2
           }
         ],
-        total: 999,
+        total: 90,
         paymentMethod: 'credit_card',
         shippingAddress: {
           fullName: 'Alice',
@@ -96,7 +109,8 @@ describe('Order routes', () => {
         }
       });
 
-    expect(response.status).toBe(400);
-    expect(response.body.message).toMatch(/không khớp|Tổng tiền không hợp lệ/i);
+    expect(response.status).toBe(201);
+    expect(response.body.total).toBe(200);
+    expect(response.body.items[0].price).toBe(100);
   });
 });

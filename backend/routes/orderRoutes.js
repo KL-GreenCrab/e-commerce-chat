@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
+const Product = require('../models/Product');
 const mongoose = require('mongoose');
 const { auth } = require('../middleware/auth');
 
@@ -13,7 +14,6 @@ router.post('/', auth, async (req, res) => {
 
         const {
             items,
-            total,
             paymentMethod,
             shippingAddress
         } = req.body;
@@ -24,53 +24,65 @@ router.post('/', auth, async (req, res) => {
             return res.status(400).json({ message: 'Giỏ hàng trống' });
         }
 
+        const productIds = items
+            .map(item => item && item.productId)
+            .filter(Boolean);
+
+        if (productIds.length !== items.length) {
+            return res.status(400).json({ message: 'productId không hợp lệ' });
+        }
+
+        const invalidIds = productIds.filter(id => !mongoose.Types.ObjectId.isValid(id));
+        if (invalidIds.length > 0) {
+            return res.status(400).json({ message: 'productId không hợp lệ (định dạng không đúng)' });
+        }
+
+        const products = await Product.find({ _id: { $in: productIds } });
+        if (products.length !== productIds.length) {
+            return res.status(400).json({ message: 'Một hoặc nhiều sản phẩm không tồn tại' });
+        }
+
+        const productMap = new Map(products.map(product => [String(product._id), product]));
+
         const normalizedItems = items.map(item => {
             if (!item || !item.productId) {
                 throw new Error('productId không hợp lệ');
             }
 
-            if (!mongoose.Types.ObjectId.isValid(item.productId)) {
-                throw new Error('productId không hợp lệ (định dạng không đúng)');
+            const product = productMap.get(String(item.productId));
+            if (!product) {
+                throw new Error('Một hoặc nhiều sản phẩm không tồn tại');
             }
 
-            if (!item.name || !item.image) {
-                throw new Error('Thiếu thông tin sản phẩm');
-            }
-
-            const price = Number(item.price);
             const quantity = Number(item.quantity);
-
-            if (!Number.isFinite(price) || price <= 0) {
-                throw new Error('Giá sản phẩm không hợp lệ');
-            }
-
             if (!Number.isFinite(quantity) || quantity <= 0 || !Number.isInteger(quantity)) {
                 throw new Error('Số lượng sản phẩm không hợp lệ');
             }
 
+            if (product.stock !== undefined && product.stock !== null && quantity > product.stock) {
+                throw new Error('Số lượng sản phẩm trong kho không đủ');
+            }
+
+            const price = Number(product.price);
+            if (!Number.isFinite(price) || price <= 0) {
+                throw new Error('Giá sản phẩm không hợp lệ');
+            }
+
             return {
-                productId: item.productId,
-                name: String(item.name).trim(),
-                image: String(item.image).trim(),
+                productId: String(product._id),
+                name: String(product.name || item.name || '').trim(),
+                image: String(product.image || item.image || '').trim(),
                 price,
                 quantity
             };
         });
 
         const calculatedTotal = normalizedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const providedTotal = Number(total);
+        const providedTotal = Number(req.body.total);
 
-        if (!Number.isFinite(providedTotal) || providedTotal <= 0) {
-            console.log('Validation failed: Invalid total amount', total);
+        if (req.body.total !== undefined && (!Number.isFinite(providedTotal) || providedTotal <= 0)) {
+            console.log('Validation failed: Invalid total amount', req.body.total);
             return res.status(400).json({ message: 'Tổng tiền không hợp lệ' });
-        }
-
-        if (Math.abs(providedTotal - calculatedTotal) > 0.01) {
-            return res.status(400).json({
-                message: 'Tổng tiền không khớp với giá trị thực tế của giỏ hàng',
-                expectedTotal: calculatedTotal,
-                receivedTotal: providedTotal
-            });
         }
 
         // Validate payment method
