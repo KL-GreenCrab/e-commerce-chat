@@ -78,6 +78,23 @@ Backend scripts:
 - CORS is restricted via `CLIENT_URL`.
 - Sensitive fields are validated and server-side totals are recalculated before orders are created.
 
+## Demo Flow
+
+1. Open the app and create a new customer account or use the demo user account to sign in.
+2. Browse products, filter by category/brand/price, and add items to the cart.
+3. Complete the checkout flow with shipping details and confirm the order.
+4. Sign in with the admin account to manage products, view orders, and update order status.
+5. Use the chatbot to ask for recommendations such as: "gợi ý điện thoại dưới 800 đô".
+6. Verify the full shopping journey from registration to payment confirmation and admin monitoring.
+
+Demo customer account:
+- Email: `customer@example.com`
+- Password: `Customer@123`
+
+Demo admin account:
+- Email: `admin@example.com`
+- Password: `Admin@12345`
+
 ## Project Status
 
 This repository is set up as a working monorepo for local development and CI validation.
